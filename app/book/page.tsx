@@ -1,39 +1,60 @@
-import Image from "next/image"
-import { BookingForm } from "@/components/booking-form"
-import Link from "next/link"
+import { NextResponse } from "next/server"
+import { Resend } from "resend"
 
-export default function Page() {
-  return (
-    <main className="min-h-dvh">
-      <header className="border-b bg-card">
-        <div className="mx-auto max-w-6xl px-6 py-8 grid gap-6 md:grid-cols-2 md:items-center">
-          <div>
-            <h1 className="text-2xl font-semibold text-pretty">Book an Appointment</h1>
-            <p className="text-muted-foreground">
-              Medical representatives can request a meeting time with doctors. You will receive a confirmation email
-              once approved.
-            </p>
-            <p className="text-sm mt-2">
-              Need assistance?{" "}
-              <Link href="/contact" className="text-primary underline underline-offset-2">
-                Contact us here
-              </Link>
-              .
-            </p>
-          </div>
-          <div className="justify-self-end rounded-lg overflow-hidden border">
-            <Image
-              src="/doctor-appointment-booking-illustration.jpg"
-              alt="Booking illustration"
-              width={400}
-              height={240}
-            />
-          </div>
-        </div>
-      </header>
-      <section className="mx-auto max-w-3xl px-6 py-8">
-        <BookingForm />
-      </section>
-    </main>
-  )
+export async function POST(req: Request) {
+  const body = await req.json().catch(() => ({}) as any)
+  console.log("[v0] Submission received:", body)
+
+  // Basic validation
+  const {
+    repName,
+    companyName,
+    phoneNumber,
+    mailId, // recipient email
+    doctorName,
+    date,
+  } = body || {}
+
+  if (!mailId || typeof mailId !== "string") {
+    return NextResponse.json({ ok: false, error: "Email (Mail ID) is required." }, { status: 400 })
+  }
+
+  // Optional: quick email format check
+  const emailLike = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mailId)
+  if (!emailLike) {
+    return NextResponse.json({ ok: false, error: "Please provide a valid email address." }, { status: 400 })
+  }
+
+  // Ensure API key is available
+  if (!process.env.RESEND_API_KEY) {
+    console.warn("[v0] Missing RESEND_API_KEY env var. Skipping email send.")
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Email service not configured. Add RESEND_API_KEY in Project Settings.",
+      },
+      { status: 500 },
+    )
+  }
+
+  // Send email via Resend
+  const resend = new Resend(process.env.RESEND_API_KEY)
+
+  try {
+    await resend.emails.send({
+      // You can customize the sender; onboarding@resend.dev works without a custom domain
+      from: "Appointments <onboarding@resend.dev>",
+      to: [mailId],
+      subject: "Appointment Confirmed",
+      text: "Your Appointment has been booked successfully.",
+      html: `<p>Your Appointment has been booked successfully.</p>`,
+    })
+
+    // In a real app you could also persist the submission here.
+
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    console.error("[v0] Email send failed:", (err as Error).message)
+    return NextResponse.json({ ok: false, error: "Failed to send confirmation email." }, { status: 500 })
+  }
 }
