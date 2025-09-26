@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
+import useSWR from "swr"
 
-const DOCTORS = ["Dr. Anna Thompson", "Dr. Vivek Desai", "Dr. Maria Torres", "Dr. James Lee", "Dr. A. Rahman"]
+const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
 export function BookingForm() {
   const { toast } = useToast()
@@ -24,6 +25,8 @@ export function BookingForm() {
   const [doctorName, setDoctorName] = useState<string>("")
   const [date, setDate] = useState("")
   const [time, setTime] = useState("")
+
+  const { data: doctors, isLoading: isLoadingDoctors } = useSWR<{ id: string; name: string }[]>("/api/doctors", fetcher)
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -72,14 +75,20 @@ export function BookingForm() {
             <Label>Doctor</Label>
             <Select value={doctorName} onValueChange={setDoctorName}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a doctor" />
+                <SelectValue placeholder={isLoadingDoctors ? "Loading doctors..." : "Select a doctor"} />
               </SelectTrigger>
               <SelectContent>
-                {DOCTORS.map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d}
+                {Array.isArray(doctors) && doctors.length > 0 ? (
+                  doctors.map((d) => (
+                    <SelectItem key={d.id} value={d.name}>
+                      {d.name}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="__none" disabled>
+                    No doctors available (add in Doctors page)
                   </SelectItem>
-                ))}
+                )}
               </SelectContent>
             </Select>
           </div>

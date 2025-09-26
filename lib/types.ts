@@ -10,3 +10,13 @@ export interface Appointment {
   status: AppointmentStatus
   createdAt: string // ISO
 }
+
+export interface Doctor {
+  id: string
+  name: string
+  specialty?: string
+  location?: string
+  email?: string
+  phone?: string
+  createdAt: string // ISO
+}
