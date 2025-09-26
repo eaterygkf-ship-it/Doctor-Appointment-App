@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { BookingForm } from "@/components/booking-form"
+import Link from "next/link"
 
 export default function Page() {
   return (
@@ -12,9 +13,21 @@ export default function Page() {
               Medical representatives can request a meeting time with doctors. You will receive a confirmation email
               once approved.
             </p>
+            <p className="text-sm mt-2">
+              Need assistance?{" "}
+              <Link href="/contact" className="text-primary underline underline-offset-2">
+                Contact us here
+              </Link>
+              .
+            </p>
           </div>
           <div className="justify-self-end rounded-lg overflow-hidden border">
-            <Image src="/doctor-appointment-booking-illustration.jpg" alt="Booking illustration" width={400} height={240} />
+            <Image
+              src="/doctor-appointment-booking-illustration.jpg"
+              alt="Booking illustration"
+              width={400}
+              height={240}
+            />
           </div>
         </div>
       </header>

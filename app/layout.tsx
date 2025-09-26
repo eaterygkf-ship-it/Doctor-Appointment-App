@@ -45,6 +45,11 @@ export default function RootLayout({
                 </a>
               </li>
               <li>
+                <a href="/contact" className="hover:underline">
+                  Contact
+                </a>
+              </li>
+              <li>
                 <a href="/admin" className="hover:underline">
                   Admin
                 </a>
