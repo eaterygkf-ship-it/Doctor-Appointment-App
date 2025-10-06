@@ -7,7 +7,7 @@ export default function Page() {
       <header className="border-b bg-card">
         <div className="mx-auto max-w-6xl px-6 py-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-pretty">Doctor Rep Appointments</h1>
+            <h1 className="text-2xl font-semibold text-pretty">GRACE KENNETT FOUNDATION</h1>
             <p className="text-muted-foreground">Live, date-wise schedule with filters and print view.</p>
           </div>
           <div className="rounded-lg overflow-hidden border">
