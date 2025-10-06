@@ -7,15 +7,15 @@ export default function Page() {
       <header className="border-b bg-card">
         <div className="mx-auto max-w-6xl px-6 py-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-pretty">GRACE KENNETT FOUNDATION</h1>
+            <h1 className="text-2xl font-semibold text-pretty">Medical Rep Appoinments</h1>
             <p className="text-muted-foreground">Live, date-wise schedule with filters and print view.</p>
           </div>
           <div className="rounded-lg overflow-hidden border">
             <Image
               src="/Dr.png"
               alt="Clinic schedule"
-              width={320}
-              height={160}
+              width={600}
+              height={600}
               className="block"
               priority
             />
