@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { DashboardClient } from "@/components/dashboard-client"
-
+     
 export default function Page() {
   return (
     <main className="min-h-dvh">
