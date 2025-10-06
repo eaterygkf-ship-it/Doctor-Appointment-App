@@ -12,7 +12,7 @@ export default function Page() {
           </div>
           <div className="rounded-lg overflow-hidden border">
             <Image
-              src="/clinic-schedule-illustration.jpg"
+              src="/Dr.png"
               alt="Clinic schedule"
               width={320}
               height={160}
