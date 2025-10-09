@@ -1,12 +1,30 @@
 import { type NextRequest, NextResponse } from "next/server"
 import type { Appointment } from "@/lib/types"
+import nodemailer from "nodemailer";
 
 const store: { items: Appointment[] } = globalThis as any
 
 // Fake mail sender (stub)
-function sendEmail(to: string, subject: string, message: string) {
-  // eslint-disable-next-line no-console
-  console.log("[v0] Email stub:", { to, subject, message })
+async function sendEmail(to: string, subject: string, message: string) {
+  // Create a transporter using your email service
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  await transporter.sendMail({
+    from: `"Your Website" <${process.env.SMTP_USER}>`,
+    to,
+    subject,
+    text: message,
+  });
+
+  console.log("Email sent to:", to);
 }
 
 export async function POST(req: NextRequest) {
