@@ -6,8 +6,24 @@ const store: { items: Appointment[] } = globalThis as any
 
 // Fake mail sender (stub)
 async function sendEmail(to: string, subject: string, message: string) {
-  console.log("[v0] Email stub:",{to,subject, message})
-}
+  // Create a transporter using your email service
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  await transporter.sendMail({
+    from: "Your Website" <${process.env.SMTP_USER}>,
+    to,
+    subject,
+    text: message,
+  });
+
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
