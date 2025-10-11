@@ -1,13 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import type { Appointment } from "@/lib/types"
+import { sendAppointmentConfirmedEmail } from "@/lib/mailer"
 
 const store: { items: Appointment[] } = globalThis as any
-
-// Fake mail sender (stub)
-function sendEmail(to: string, subject: string, message: string) {
-  // eslint-disable-next-line no-console
-  console.log("[v0] Email stub:", { to, subject, message })
-}
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const body = await req.json()
@@ -18,7 +13,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   store.items[idx].status = status
   if (status === "confirmed") {
     const a = store.items[idx]
-    sendEmail(a.email, "Appointment confirmed", "Your Appointment has been confirmed.")
+    await sendAppointmentConfirmedEmail({
+      to: a.email,
+      repName: a.repName,
+      doctorName: a.doctorName,
+      datetime: a.datetime,
+    })
   }
   return NextResponse.json(store.items[idx])
 }

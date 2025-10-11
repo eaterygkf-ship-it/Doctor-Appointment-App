@@ -1,16 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import type { Appointment } from "@/lib/types"
-import nodemailer from "nodemailer";
+import { sendAppointmentConfirmedEmail } from "@/lib/mailer"
 
 const store: { items: Appointment[] } = globalThis as any
-
-// Fake mail sender (stub)
-// Fake mail sender (stub)
-function sendEmail(to: string, subject: string, message: string) {
-  // eslint-disable-next-line no-console
-  console.log("[v0] Email stub:", { to, subject, message })
-}
-
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
@@ -22,10 +14,20 @@ export async function POST(req: NextRequest) {
     .sort((a, b) => a.datetime.localeCompare(b.datetime))
 
   const toConfirm = todays.slice(0, 10)
-  toConfirm.forEach((a) => {
+  for (const a of toConfirm) {
     a.status = "confirmed"
-    sendEmail(a.email, "Appointment confirmed", "Your Appointment has been confirmed.")
-  })
+  }
+
+  await Promise.allSettled(
+    toConfirm.map((a) =>
+      sendAppointmentConfirmedEmail({
+        to: a.email,
+        repName: a.repName,
+        doctorName: a.doctorName,
+        datetime: a.datetime,
+      }),
+    ),
+  )
 
   return NextResponse.json({ confirmed: toConfirm.length })
 }

@@ -1,16 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server"
 import type { Appointment } from "@/lib/types"
+import { sendAppointmentBookedEmail } from "@/lib/mailer"
 
 // Module-scoped in-memory store (MVP only)
 const store: { items: Appointment[] } = globalThis as any
 if (!store.items) {
   ;(store as any).items = []
-}
-
-// Fake mail sender (stub)
-function sendEmail(to: string, subject: string, message: string) {
-  // eslint-disable-next-line no-console
-  console.log("[v0] Email stub:", { to, subject, message })
 }
 
 export async function GET() {
@@ -40,12 +35,13 @@ export async function POST(req: NextRequest) {
   }
   store.items.push(appt)
 
-  // Send immediate receipt to rep (stub)
-  sendEmail(
-    email,
-    "Appointment request received",
-    "Your Appointment has been booked successfully. We will confirm shortly.",
-  )
+  // Send actual email to the rep; do not fail booking if email fails
+  await sendAppointmentBookedEmail({
+    to: email,
+    repName,
+    doctorName,
+    datetime,
+  })
 
   return NextResponse.json(appt, { status: 201 })
 }

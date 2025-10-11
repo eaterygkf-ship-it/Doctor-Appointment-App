@@ -18,7 +18,7 @@ export default function Page() {
               <Link href="/contact" className="text-primary underline underline-offset-2">
                 Contact us here
               </Link>
-              
+              .
             </p>
           </div>
           <div className="justify-self-end rounded-lg overflow-hidden border">
