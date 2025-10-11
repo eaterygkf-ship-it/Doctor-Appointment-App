@@ -17,6 +17,8 @@ async function sendEmail(to: string, subject: string, message: string) {
     },
   });
 
+  console.log("mail sent")
+
   await transporter.sendMail({
     from: "Your Website" <${process.env.SMTP_USER}>,
     to,
