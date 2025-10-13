@@ -24,18 +24,18 @@ export function BookingForm() {
   const [phone, setPhone] = useState("")
   const [doctorName, setDoctorName] = useState<string>("")
   const [date, setDate] = useState("")
-  const [time, setTime] = useState("")
 
   const { data: doctors, isLoading: isLoadingDoctors } = useSWR<{ id: string; name: string }[]>("/api/doctors", fetcher)
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!repName || !email || !phone || !doctorName || !date || !time) {
+    if (!repName || !email || !phone || !doctorName || !date) {
       toast({ title: "Missing info", description: "Please complete all fields." })
       return
     }
     setIsSubmitting(true)
-    const datetime = new Date(`${date}T${time}:00`).toISOString()
+    // We'll use Noon (12:00) as the default time since time is now removed
+    const datetime = new Date(`${date}T12:00:00`).toISOString()
     const res = await fetch("/api/appointments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -92,15 +92,9 @@ export function BookingForm() {
               </SelectContent>
             </Select>
           </div>
-          <div className="grid gap-2 md:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="date">Preferred Date</Label>
-              <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="time">Preferred Time</Label>
-              <Input id="time" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
-            </div>
+          <div className="grid gap-2">
+            <Label htmlFor="date">Preferred Date</Label>
+            <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           </div>
           <div className="pt-2">
             <Button type="submit" disabled={isSubmitting} className="w-full">
