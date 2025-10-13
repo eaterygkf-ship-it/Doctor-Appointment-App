@@ -35,7 +35,7 @@ export function BookingForm() {
     }
     setIsSubmitting(true)
     // We'll use Noon (12:00) as the default time since time is now removed
-    const datetime = new Date(`${date}T12:00:00`).toISOString()
+    const datetime = new Date(`${date}T01:00:00`).toISOString()
     const res = await fetch("/api/appointments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
