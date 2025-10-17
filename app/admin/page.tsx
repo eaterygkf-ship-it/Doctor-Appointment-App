@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+
 import { useEffect, useMemo, useState } from "react"
 import useSWR, { mutate } from "swr"
 import type { Appointment } from "@/lib/types"
@@ -72,8 +73,7 @@ function AdminControls() {
 
   const todays = useMemo(() => {
     if (!data || !date) return []
-    // Filter by date only, ignoring time
-    return data.filter((a) => a.datetime.split("T")[0] === date)
+    return data.filter((a) => a.datetime.startsWith(date))
   }, [data, date])
 
   async function confirmFirstTen() {
@@ -135,7 +135,7 @@ function AdminControls() {
               <tr>
                 <th className="px-3 py-2 text-left">Rep</th>
                 <th className="px-3 py-2 text-left">Doctor</th>
-                <th className="px-3 py-2 text-left">Date</th>
+                <th className="px-3 py-2 text-left">Date/Time</th>
                 <th className="px-3 py-2 text-left">Status</th>
                 <th className="px-3 py-2 text-left">Actions</th>
               </tr>
@@ -148,7 +148,7 @@ function AdminControls() {
                     <div className="text-muted-foreground">{a.email}</div>
                   </td>
                   <td className="px-3 py-2">{a.doctorName}</td>
-                  <td className="px-3 py-2">{new Date(a.datetime).toLocaleDateString()}</td>
+                  <td className="px-3 py-2">{new Date(a.datetime).toLocaleString()}</td>
                   <td className="px-3 py-2">
                     <Badge variant={a.status === "pending" ? "secondary" : "default"}>{a.status}</Badge>
                   </td>

@@ -21,27 +21,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 })
   }
 
-  // Get date part from datetime (YYYY-MM-DD)
-  const appointmentDate = new Date(datetime).toISOString().split('T')[0]
-  
-  // Count appointments for the same date
-  const dailyAppointments = store.items.filter(
-    (appt) => new Date(appt.datetime).toISOString().split('T')[0] === appointmentDate
-  )
-  
-  // Check if appointment limit (20) is exceeded
-  if (dailyAppointments.length >= 20) {
-    await sendAppointmentBookedEmail({
-      to: email,
-      subject: "Appointment Unavailable",
-      body: `Appointments are closed for ${appointmentDate}. Please try booking on another date.`,
-    })
-    return NextResponse.json(
-      { error: "Appointments are closed for this date" },
-      { status: 400 }
-    )
-  }
-
   const id = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
   const now = new Date().toISOString()
   const appt: Appointment = {
@@ -56,11 +35,12 @@ export async function POST(req: NextRequest) {
   }
   store.items.push(appt)
 
-  // Send confirmation email
+  // Send actual email to the rep; do not fail booking if email fails
   await sendAppointmentBookedEmail({
     to: email,
-    subject: "Appointment Confirmation",
-    body: `Your appointment with Dr. ${doctorName} has been successfully booked on ${appointmentDate}.`,
+    repName,
+    doctorName,
+    datetime,
   })
 
   return NextResponse.json(appt, { status: 201 })
